@@ -1,0 +1,3 @@
+In lambda Calcus the f(g(h(x))) would be represented as folloows:
+
+\f.(\fgh.\x.f(g(h x)))

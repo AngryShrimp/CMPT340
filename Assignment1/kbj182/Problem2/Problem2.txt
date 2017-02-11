@@ -1,0 +1,22 @@
+Prelude> :load "Problem2.hs"
+[1 of 1] Compiling Main             ( Problem2.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> fastExp1 2 2
+4
+*Main> fastExp1 2 7
+128
+*Main> fastExp2 2 2
+4
+*Main> fastExp2 2 7
+128
+*Main> fastExp3 2 2
+4
+*Main> fastExp3 2 7
+128
+*Main> fastExp1 4 5
+1024
+*Main> fastExp2 4 4
+256
+*Main> fastExp3 9 9
+387420489
+*Main> 
