@@ -1,0 +1,12 @@
+--Keenan Johnstone
+--Cmpt340 Assignment 2
+--Feb 14, 2016
+
+Problem 1
+=========
+and true(not true)
+
+\v.\w.(v w v) true(not true)
+\w.(true(not true) w true(not true))
+\w.(true(\v.\w.\x.(v x w) true) w true(\v.\w.\x.(v x w) true))
+\w.(true(\w.\x.(true x w)) w true(\w.\x.(true x w)))
