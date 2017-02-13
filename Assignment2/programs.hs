@@ -13,22 +13,26 @@
 
 shuffle :: [a] -> [a] -> [a]
 shuffle []     ys = ys
-shuffle (x:xs) ys = x:(merge ys xs)
+shuffle (x:xs) ys = x:(shuffle ys xs)
 
-shuffleTest1 :: [Int]
-shuffleTest1 = [1,2,3,4,5]
-
-shuffleTest2 :: [Int]
-shuffleTest2 = [51, 52, 53, 54, 55]
-
-shuffleTest3 :: [Char]
-shuffleTest3 = ['a', 'b', 'c']
-
-shuffleTest4 :: [Char]
-shuffleTest4 = ['m', 'n', 'o']
 
 --Problem 5
 
+split :: [a] -> Int -> ([a], [a])
+split [] _ = ([], [])
+split xs 0 = ([], xs)
+split (x:xs) n = (x:xs1, xs2)
+    where (xs1, xs2) = split xs (n - 1)
+
 --Problem 6
 
+nshuffle :: Int -> Int -> [Char]
+nshuffle c n = shuffle (listOfR c) (listOfB c)
+    where
+        listOfB c = take c (repeat 'b')
+        listOfR c = take c (repeat 'r')
+
 --Problem 7
+
+consecutive :: [Char] -> Int
+consecutive
