@@ -1,5 +1,14 @@
 --Problem 2
 
+*Main> div 3 4
+0
+*Main> Main.uncurry div (3,4)
+0
+*Main> pairAdd (3,4)
+7
+*Main> Main.curry pairAdd 3 4
+7
+
 --Problem 3
 
 --Problem 4
