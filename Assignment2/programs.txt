@@ -11,6 +11,42 @@
 
 --Problem 3
 
+*Main> test1
+0.329 * 10^2
+*Main> test2
+0.670 * 10^2
+*Main> test3
+0.400 * 10^3
+*Main> test1 == test2
+False
+*Main> test1 == test1
+True
+*Main> test1 <= test1
+True
+*Main> test1 < test1
+False
+*Main> test1 > test1
+False
+*Main> test1 > test2
+False
+*Main> test1 < test2
+True
+*Main> test1 + test2
+0.999 * 10^2
+*Main> test1 / test2
+0.0 * 10^1
+*Main> test3 / test2
+0.0 * 10^2
+*Main> MyFloat(1340, 4) / test2
+0.2 * 10^3
+*Main> test3 * test2
+0.268000 * 10^5
+*Main> whole test1
+32
+*Main> fraction test1
+0.90000004
+
+
 --Problem 4
 
 *Main> shuffle [1,2,3,4,5] [10,11,12,13,14,15,16]
@@ -27,4 +63,23 @@
 
 --Problem 6
 
+*Main> nshuffle 4 5
+"rrbbrrbb"
+*Main> nshuffle 4 6
+"rrrrbbbb"
+*Main> nshuffle 4 7
+"rbrbrbrb"
+*Main> nshuffle 4 0
+"rrrrbbbb"
+*Main> nshuffle 4 1
+"rbrbrbrb"
+*Main> nshuffle 10 25
+"rbbrrbbbrrbbrrrbbrrb"
+*Main> 
+
 --Problem 7
+
+*Main> consecutive "abbbbacxccccxsddd"
+4
+*Main> consecutive "abbbbacxcccccxsddd"
+5

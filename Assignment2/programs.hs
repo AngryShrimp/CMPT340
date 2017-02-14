@@ -2,6 +2,9 @@
 --Cmpt340 Assignment 2
 --Feb 14, 2016
 
+--Import for problem 7
+import Data.List
+import Data.Ord
 
 --Problem 2
 
@@ -122,9 +125,16 @@ split (x:xs) n = (x:xs1, xs2)
 --Problem 6
 
 nshuffle :: Int -> Int -> [Char]
-nshuffle c n = shuffle (listOfR c) (listOfB c)
+nshuffle c n = tempShuf c n ((listOfR c) ++ (listOfB c))
     where
         listOfB c = take c (repeat 'b')
         listOfR c = take c (repeat 'r')
+        firstElem (xs,_) = xs
+        secondElem (_,xs) = xs        
+        tempShuf c n xs = if (n > 0) then tempShuf c (n-1) (shuffle (firstElem(split xs c)) (secondElem(split xs c)))
+                          else            xs
 
 --Problem 7
+
+consecutive :: [Char] -> Int
+consecutive s = length (maximumBy (comparing length) (group s))
