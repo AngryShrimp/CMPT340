@@ -1,0 +1,8 @@
+--Keenan Johnstone
+--Cmpt340 Assignment 3
+--Mar 7, 2016
+
+*Main> perfects 1000
+[6,28,496]
+*Main> perfects 10000
+[6,28,496,8128]
