@@ -1,0 +1,8 @@
+--Keenan Johnstone
+--Cmpt340 Assignment 3
+--Mar 7, 2016
+
+*Main> luhn [1,2,3,4]
+False
+*Main> luhn [1,7,8,4]
+True
