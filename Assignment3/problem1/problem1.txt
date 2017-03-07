@@ -6,3 +6,9 @@
 [2,3,4]
 *Main> Main.map (* 10) [1,2,3]
 [10,20,30]
+
+
+ 
+*Main> Main.iterate (+ 1) 1
+
+***This prints infinitly!

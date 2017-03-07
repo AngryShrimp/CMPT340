@@ -1,3 +1,0 @@
---Keenan Johnstone
---Cmpt340 Assignment 3
---Mar 7, 2016
