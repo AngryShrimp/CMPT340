@@ -99,9 +99,6 @@ public class Part1 {
         // Tell the worker to calculate the factorial of num
         inbox.send(worker, num);
 
-        // Tell the worker to calculate the factorial of num
-        inbox.send(worker, num);
-
         // Wait up to 20 seconds for a reply from the worker
         Long reply = null;
         try {
