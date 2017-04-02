@@ -15,8 +15,11 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Created by Keenan on 2017-03-20.
+/*
+ *	Keenan Johnstone
+ *	11119412
+ *	kbj182
+ *	cmpt340 Assignment 4
  */
 public class Part1 {
     //Define our new Akka Actors

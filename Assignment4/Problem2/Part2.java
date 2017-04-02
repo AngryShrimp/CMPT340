@@ -5,22 +5,16 @@ import akka.actor.ActorSystem;
 import akka.actor.Inbox;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
-import javafx.concurrent.Worker;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import static java.util.Collections.shuffle;
-
-/**
- * Created by Keenan on 2017-03-22.
+/*
+ *	Keenan Johnstone
+ *	11119412
+ *	kbj182
+ *	cmpt340 Assignment 4
  */
 public class Part2 {
 
@@ -35,6 +29,9 @@ public class Part2 {
         int[] ranks;
         boolean married = false;
 
+        /*
+        MALE ACTOR
+         */
         public void onReceive(Object message) throws Throwable {
             //Set our number from 1 to n
             if (message instanceof SetSelf){
@@ -43,37 +40,40 @@ public class Part2 {
             //Trigger our propose, redirect the proposal to the appropriate female
             else if (message instanceof malePropose) {
                 if (!married) {
-                    Timeout t = new Timeout(Duration.create(20, TimeUnit.SECONDS));
-
-                    Future<Object> future = Patterns.ask(femaleActorList.get(ranks[proposalStep]), new femalePropose(number), t);
-
-                    try {
-                        married = (Boolean) Await.result(future, t.duration());
-                    } catch (Exception e) {
-                        System.out.println("Got a timeout after waiting 20s in Male" + number);
-                        System.exit(1);
-                    }
-                    if(!married)
-                        proposalStep++;
-                    //if we arent married restart
-                    if(proposalStep >= femaleActorList.toArray().length)
-                        proposalStep = 0;
-                    getSender().tell(married, getSelf());
+                    System.out.println("M" + number + ": Proposing to W" + ranks[proposalStep]);
+                    femaleActorList.get(ranks[proposalStep]).tell(new femalePropose(number), getSelf());
                 }
             }
             //Proposal reply from Female
             else if (message instanceof ProposalReply) {
+                if(((ProposalReply) message).accepted)
+                    System.out.println("M" + number + ": married to W" + ((ProposalReply) message).number);
+                else
+                    System.out.println("M" + number + ": proposal was rejected by W" + ((ProposalReply) message).number);
                 married = ((ProposalReply) message).accepted;
+
+                //If the man isnt married, try the next woman and keep cycling until married
+                if(!married){
+                    proposalStep++;
+                    //start from the from of the list again
+                    if(proposalStep >= ranks.length)
+                        proposalStep = 0;
+                    System.out.println("M" + number + ": There's plenty of fish in the sea, time to try again!");
+                    getSelf().tell(new malePropose(), getSelf());
+                }
+
             }
             //If we get dumped
             else if (message instanceof Dumped) {
                 married = false;
+                System.out.println("M" + number + ": DUMPED by W" + ((Dumped) message).number + ", time to get back in the dating scene!");
+                getSelf().tell(new malePropose(), getSelf());
             }
             //If it's just an list, this is where we get the list of the opposite gender
             else if (message instanceof int[]) {
                 ranks = (int[]) message;
                 shuffleArray(ranks);
-                System.out.println("M" + number + Arrays.toString(ranks));
+                System.out.println("M" + number + ": Rank array = " + Arrays.toString(ranks));
             }
             //Else unhandled
             else {
@@ -82,9 +82,12 @@ public class Part2 {
         }
     }
 
+    /*
+    FEMALE ACTOR
+     */
     private static class ActorFemale extends UntypedActor {
         private int number;
-        int currentMale = -1;
+        int currentMale;
         int[] ranks;
         boolean married = false;
 
@@ -95,19 +98,29 @@ public class Part2 {
                 this.number = ((SetSelf) message).num;
             }
             if (message instanceof femalePropose) {
+                int newMale = ((femalePropose) message).number;
+                System.out.println("W" + number + ": being proposed to by M" + newMale + "(#" + arraysIndexOf(ranks, newMale) + ")");
                 if (!married){
                     married = true;
-                    currentMale = ((femalePropose) message).number;
-                    getSender().tell(new ProposalReply(true), getSelf());
+                    currentMale = newMale;
+                    System.out.println("W" + number + ": accepting proposal from M" + currentMale);
+                    getSender().tell(new ProposalReply(true, number), getSelf());
                 }
                 else{
+
                     //if the new male is higher ranked (lower on the list) marry them and dump the old male
-                    if(Arrays.asList(ranks).indexOf(((femalePropose) message).number) < Arrays.asList(ranks).indexOf(currentMale)){
+                    //System.out.println("W" + number + ": COMPARING MEN, CURRENT: M" + currentMale + "(#" + arraysIndexOf(ranks, currentMale) + ") VS M" + ((femalePropose) message).number + "(#" + arraysIndexOf(ranks, ((femalePropose) message).number) + ")");
+                    if(arraysIndexOf(ranks, currentMale) > arraysIndexOf(ranks, newMale)){
+                        System.out.println("W" + number + ": dumping M" + currentMale + " for M" + newMale);
                         //dump the old male
-                        maleActorList.get(currentMale).tell(new Dumped(), getSelf());
+                        maleActorList.get(currentMale).tell(new Dumped(number), getSelf());
                         //Marry new male
-                        currentMale = ((femalePropose) message).number;
-                        getSender().tell(new ProposalReply(true), getSelf());
+                        currentMale = newMale;
+                        getSender().tell(new ProposalReply(true, number), getSelf());
+                    }
+                    else {
+                        System.out.println("W" + number + ": rejecting proposal by M" + newMale);
+                        getSender().tell(new ProposalReply(false, number), getSelf());
                     }
                 }
             }
@@ -115,7 +128,7 @@ public class Part2 {
             else if (message instanceof int[]) {
                 ranks = (int[]) message;
                 shuffleArray(ranks);
-                System.out.println("W" + number + Arrays.toString(ranks));
+                System.out.println("W" + number + ": Rank array = " + Arrays.toString(ranks));
             }
         }
     }
@@ -139,9 +152,11 @@ public class Part2 {
 
     private static class ProposalReply implements Serializable{
         boolean accepted;
+        int number;
 
-        public ProposalReply(boolean b) {
+        public ProposalReply(boolean b, int i) {
             this.accepted = b;
+            this.number = i;
         }
     }
 
@@ -150,10 +165,14 @@ public class Part2 {
     }
 
     private static class Dumped implements  Serializable {
+        public int number;
 
+        public Dumped(int message) {
+            this.number = message;
+        }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //Get input
         System.out.print("Please enter the number of Men and Women that the program will run for: ");
         Scanner input = new Scanner(System.in);
@@ -194,9 +213,20 @@ public class Part2 {
             inbox.send(femaleActorList.get(i), shuffledMaleList);
         }
 
-        inbox.send(maleActorList.get(0), new malePropose());
+        //Wait for the actors to finish creating
 
-        // Shut down the system gracefully
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("================");
+        for(int i = 0; i < maleActorList.size(); i++)
+        {
+            inbox.send(maleActorList.get(i), new malePropose());
+            TimeUnit.MICROSECONDS.sleep(100);
+        }
+
+
+        TimeUnit.SECONDS.sleep(2*num);
+
+        // Shut down the system gracefully if we are taking too long (we can get stuck in a loop
         actorSystem.terminate();
     }
 
@@ -214,5 +244,14 @@ public class Part2 {
         int helper = a[i];
         a[i] = a[change];
         a[change] = helper;
+    }
+
+    public static int arraysIndexOf(int[] array, int x){
+        for(int i = 0; i < array.length; i++)
+        {
+            if(array[i] == x)
+                return i;
+        }
+        return -1;
     }
 }
